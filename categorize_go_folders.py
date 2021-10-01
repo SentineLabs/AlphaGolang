@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3
 #IDAPython script to categorize golang functions into folders
 import idaapi
 import idautils
@@ -20,7 +19,6 @@ for function in idautils.Functions():
         index2 = name.index(".")
         if index2 < index:
             index = index2
-        print(name, index) #DEBUG
         folderName = name[:index]
     except:
         uncategorized.append(name)
