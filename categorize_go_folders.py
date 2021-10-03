@@ -45,12 +45,37 @@ folderName = "StandardGoPackages"
 
 try:
     func_dir.mkdir(folderName)
-    #print("Created folder: ", folderName)    
     for package in common_packages:
         try:
             func_dir.rename(package, folderName+"/"+package)
-            #print("Moved: "+name+" to "+folderName)
         except:
             print("Failed to move standard package folder:", package)
 except:
     print("Failed to create folder: ", folderName)
+
+
+if "github" in folders:
+    github_repos = {}
+    for package in folders["github"]:
+        repo = ""
+        print(package[11:])
+        for i,c in enumerate(package[11:]):
+            if c == "." or c == "_": 
+                i = i+11
+                repo = package[11:i]
+                github_repos.setdefault(repo,[]).append(package)
+                break
+    print(github_repos) #DEBUG
+
+    for repo in github_repos:
+        sub_folder = "github/" + repo
+        print(sub_folder, repo)
+        try:
+            func_dir.mkdir(sub_folder)
+        except:
+            print("Failed to create folder: ", sub_folder)
+        for func in github_repos[repo]:
+            try:
+                func_dir.rename("github/"+func, sub_folder+"/"+func)
+            except:
+                print("Failed to move github repo:", func)
