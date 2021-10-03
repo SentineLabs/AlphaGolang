@@ -2,6 +2,12 @@ AlphaGolang by Juan Andres Guerrero-Saade (SentinelLabs)
 
 Reference:
 
+
+Components:
+categorize_go_folders.py
+recreate_pclntab.py 
+
+
 Credit to:
 > Tim Strazzere for releasing the original golang_loader_assist
 > Milan Bohacek (Avast Software s.r.o.) for his invaluable help figuring out the idatree API.

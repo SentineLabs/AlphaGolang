@@ -1,4 +1,5 @@
 #IDAPython script to categorize golang functions into folders
+#Turn on "Show Folders" to see effects
 import idaapi
 import idautils
 import ida_dirtree
@@ -22,6 +23,8 @@ for function in idautils.Functions():
             break
     if folderName == "":
         folderName = "uncategorized"
+    if folderName == "sub":
+        folderName = "unnamed"
     folders.setdefault(folderName,[]).append(name)
 for folderName in folders:
     try:
@@ -36,7 +39,7 @@ for folderName in folders:
         except:
             print("Failed to move function:", name)
 
-common_packages = ["archive", "bufio", "builtin", "bytes", "compress", "container", "context", "crypto", "database", "debug", "embed", "encoding", "errors", "flag", "fmt", "go", "hash", "html", "image", "index", "io", "log", "math", "mime", "net", "os", "path", "plugin", "regexp", "sort", "strconv", "strings", "sync", "syscall", "testing", "text", "time", "unicode", "unsafe", "internal", "reflect", "vendor", "golang", "runtime", "type"]
+common_packages = ["archive", "bufio", "builtin", "bytes", "compress", "container", "context", "crypto", "database", "debug", "embed", "encoding", "errors", "flag", "fmt", "go", "hash", "html", "image", "index", "io", "log", "math", "mime", "net", "os", "path", "plugin", "regexp", "sort", "strconv", "strings", "sync", "syscall", "testing", "text", "time", "unicode", "unsafe", "internal", "reflect", "vendor", "golang", "runtime", "type", "setg"]
 
 folderName = "StandardGoPackages"
 
