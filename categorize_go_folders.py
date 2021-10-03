@@ -65,7 +65,6 @@ if "github" in folders:
                 repo = package[11:i]
                 github_repos.setdefault(repo,[]).append(package)
                 break
-    print(github_repos) #DEBUG
 
     for repo in github_repos:
         sub_folder = "github/" + repo
