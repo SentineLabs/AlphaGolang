@@ -6,10 +6,12 @@ Reference:
 Components:
 X go_entry (...)
 > recreate_pclntab.py  (READY)
-X golang_loader_assist rip (...)
-> refactor golang loader assist for IDA 7.6 (Prototype ready)
+> full_function_discovery.py (READY)
+        |_> Split from golang loader assist
 > categorize_go_folders.py (READY)
-X fix_string_cast.py (...)
+> fix_string_cast.py (READY)
+        |_> Split from golang loader assist
+        |_> Need to fix (undefine strings before attempting to cast)
 X user_code_auto_yara_gen.py (...)
 X string_ref_tracking.py
 
