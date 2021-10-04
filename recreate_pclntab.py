@@ -55,7 +55,8 @@ if ea != idaapi.BADADDR:
             ida_funcs.add_func(offset_addr)
         ea = ea + multiplier
 
-        if not exists:
+    if not exists:
+        if seg_end > seg_start:
             print("Creating .gopclntab: ", hex(seg_start), hex(seg_end))
             idaapi.add_segm(0, seg_start, seg_end, ".gopclntab", "DATA")
 else:
