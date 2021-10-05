@@ -1,12 +1,17 @@
 '''
-Refactoring Tim Strazzere's GolangLoaderAssist
+Fix string casts by reference to the loading functions
+Refactored from Tim Strazzere's GolangLoaderAssist
 
-Split string loading and redefining functionality
-
+Fixed:
+>Added routine to undefine strings that are too long and thereby suspect before attempting to create new strings based on string loading routines
+>Added logic to undefine items in the target offset when retrying string casting, drastically better results
+>Added sanity checks for intended string address
 '''
 from idautils import *
 from idc import *
 import idaapi
+import ida_bytes
+import idautils
 import ida_segment
 import sys
 import string
@@ -14,7 +19,7 @@ import string
 #
 # Constants
 #
-DEBUG = False
+DEBUG = False 
 
 #
 # Utility functions
@@ -63,6 +68,19 @@ def _get_seg_from_rdata(possible_seg_names):
                 return ea
 
     return None
+
+#Undefine obviously bad string definitions:
+def undefine_string(ea):
+    ida_bytes.del_items(ea)
+    debug("Deleted string @ offset %s" % hex(s.ea))   
+
+def undefine_long_strings(len_boundary):
+    counter = 0
+    for s in idautils.Strings():
+        if s.length > len_boundary:
+            undefine_string(s.ea)
+            counter += 1
+    return counter
 
 
 #
@@ -213,7 +231,8 @@ def strings_init():
                 else:
                     # There appears to be something odd that goes on with IDA making some strings, always works
                     # the second time, so lets just force a retry...
-                   retry.append((addr, string_addr, string_len))
+                    if string_len < 120:
+                        retry.append((addr, string_addr, string_len))
 
                 # Skip the extra mov lines since we know it won't be a load on any of them
                 addr = ida_search.find_code(addr_3, SEARCH_DOWN)
@@ -221,6 +240,12 @@ def strings_init():
                 addr = ida_search.find_code(addr, SEARCH_DOWN)
 
     for instr_addr, string_addr, string_len in retry:
+        try:
+            if string_addr > ida_segment.get_last_seg().end_ea:
+                continue
+        except:
+            debug("String retry addr check fallthrough")
+        undefine_string(ida_bytes.get_item_head(string_addr)) #Attempt to undefine after first failed attempt to define string
         if create_string(string_addr, string_len):
             if create_offset(instr_addr):
                 strings_added += 1
@@ -231,6 +256,10 @@ def strings_init():
 
 def main():
 # Attempt to find all string loading idioms
+
+    #Prep
+    undefinedCount = undefine_long_strings(50) #Feel free to fiddle with len
+    info('Undefined %d suspected bad strings' % undefinedCount)
     strings_added = strings_init()
     info('Found and successfully created %d strings!' % strings_added)
 

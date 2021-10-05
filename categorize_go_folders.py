@@ -58,7 +58,6 @@ if "github" in folders:
     github_repos = {}
     for package in folders["github"]:
         repo = ""
-        print(package[11:])
         for i,c in enumerate(package[11:]):
             if c == "." or c == "_": 
                 i = i+11
@@ -68,7 +67,6 @@ if "github" in folders:
 
     for repo in github_repos:
         sub_folder = "github/" + repo
-        print(sub_folder, repo)
         try:
             func_dir.mkdir(sub_folder)
         except:
