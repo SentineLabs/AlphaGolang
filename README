@@ -1,0 +1,25 @@
+AlphaGolang by Juan Andres Guerrero-Saade (SentinelLabs)
+
+Reference:
+
+
+Components:
+> recreate_pclntab.py  (READY)
+        |_> Recreates the gopclntab section from heuristics
+        |_> Bruteforce discovers new functions based on the pcln table
+        |_> Mostly useful for IDA v7.5-
+> function_renaming.py (READY)
+        |_> Split from golang loader assist
+        |_> Fixed some function name cleaning issues of python3
+> categorize_go_folders.py (READY)
+> fix_string_cast.py (READY)
+        |_> Split from golang loader assist
+        |_> New sanity checks make it far more effective
+X generate_pseudocode.py 
+X user_code_auto_yara_gen.py (...)
+X string_ref_tracking.py
+
+Credit to:
+> Tim Strazzere for releasing the original golang_loader_assist
+> Milan Bohacek (Avast Software s.r.o.) for his invaluable help figuring out the idatree API.
+
