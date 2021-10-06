@@ -6,6 +6,9 @@ Fixed:
 >Added routine to undefine strings that are too long and thereby suspect before attempting to create new strings based on string loading routines
 >Added logic to undefine items in the target offset when retrying string casting, drastically better results
 >Added sanity checks for intended string address
+
+Needs:
+>More string load heuristics
 '''
 from idautils import *
 from idc import *
@@ -72,7 +75,7 @@ def _get_seg_from_rdata(possible_seg_names):
 #Undefine obviously bad string definitions:
 def undefine_string(ea):
     ida_bytes.del_items(ea)
-    debug("Deleted string @ offset %s" % hex(s.ea))   
+    debug("Deleted string @ offset %s" % hex(ea))   
 
 def undefine_long_strings(len_boundary):
     counter = 0
@@ -225,6 +228,7 @@ def strings_init():
                 string_addr = idc.get_operand_value(addr, 1)
                 addr_3 = ida_search.find_code(ida_search.find_code(addr, SEARCH_DOWN), SEARCH_DOWN)
                 string_len = idc.get_operand_value(addr_3, 1)
+                undefine_string(string_addr)
                 if create_string(string_addr, string_len):
                     if create_offset(addr):
                         strings_added += 1

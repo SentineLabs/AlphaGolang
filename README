@@ -4,14 +4,18 @@ Reference:
 
 
 Components:
-X go_entry (...)
 > recreate_pclntab.py  (READY)
-> full_function_discovery.py (READY)
+        |_> Recreates the gopclntab section from heuristics
+        |_> Bruteforce discovers new functions based on the pcln table
+        |_> Mostly useful for IDA v7.5-
+> function_renaming.py (READY)
         |_> Split from golang loader assist
+        |_> Fixed some function name cleaning issues of python3
 > categorize_go_folders.py (READY)
 > fix_string_cast.py (READY)
         |_> Split from golang loader assist
-        |_> Need to fix (undefine strings before attempting to cast)
+        |_> New sanity checks make it far more effective
+X generate_pseudocode.py 
 X user_code_auto_yara_gen.py (...)
 X string_ref_tracking.py
 

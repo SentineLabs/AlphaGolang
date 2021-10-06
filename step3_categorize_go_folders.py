@@ -39,7 +39,7 @@ for folderName in folders:
         except:
             print("Failed to move function:", name)
 
-common_packages = ["archive", "bufio", "builtin", "bytes", "compress", "container", "context", "crypto", "database", "debug", "embed", "encoding", "errors", "flag", "fmt", "go", "hash", "html", "image", "index", "io", "log", "math", "mime", "net", "os", "path", "plugin", "regexp", "sort", "strconv", "strings", "sync", "syscall", "testing", "text", "time", "unicode", "unsafe", "internal", "reflect", "vendor", "golang", "runtime", "type", "setg"]
+common_packages = ["archive", "bufio", "builtin", "bytes", "compress", "container", "context", "crypto", "database", "debug", "embed", "encoding", "errors", "flag", "fmt", "go", "hash", "html", "image", "index", "io", "log", "math", "mime", "net", "os", "path", "plugin", "regexp", "sort", "strconv", "strings", "sync", "syscall", "testing", "text", "time", "unicode", "unsafe", "internal", "reflect", "vendor", "golang", "runtime", "type", "setg", "pthread"]
 
 folderName = "StandardGoPackages"
 
