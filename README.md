@@ -11,27 +11,29 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
 
 **Original Reference:** Mandiant Cyber Defense Summit 2021 (Video Pending)
 
-### Working Components:
+# AlphaGolang Analysis Methodology
 
- - Step 1 
+ - ## Step 1: Recreate pcln table
     - recreate_pclntab.py (IDA v7.5- compatible)
         - Recreates the gopclntab section from heuristics
         - Mostly useful for IDA v7.5-
 
- - Step 2 
+ - ## Step 2: Discovery functions and add names to all 
     - function_renaming.py (IDA v7.5- compatible)
         - Split from golang loader assist
         - Bruteforces discovery of missing functions based on the pcln table
         - Fixed some function name cleaning issues from the py3 transition
 
- - Step 3 
-![](docs/images/categorize.gif)
-    - categorize_go_folders.py (Requires IDA v7.6+)
+ - ## Step 3: Surface user-generated functions
+   <img src="docs/images/categorize.gif" width="600" height="550" />
+   
+   - categorize_go_folders.py (Requires IDA v7.6+)
         - Automagically categorizes functions into folders
         - Requires IDAv7.6 + 'show folders' to be enabled in functions view
 
- - Step 4
-![](docs/images/stringcast.gif)
+ - ### Step 4: Fix string references
+   <img src="docs/images/stringcast.gif" width="900" height="600" />
+
     - fix_string_cast.py
         - Split from golang loader assist
         - Added logic to undefine previously existing string blobs before defining new string
