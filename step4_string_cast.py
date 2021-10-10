@@ -8,7 +8,7 @@ Fixed:
 >Added sanity checks for intended string address
 
 Needs:
->More string load heuristics
+>Better string load heuristics
 '''
 from idautils import *
 from idc import *
@@ -128,7 +128,7 @@ VALID_REGS = ['eax', 'ebx', 'ebp', 'rax', 'rcx', 'r10', 'rdx']
 # Currently it's normally esp, but could in theory be anything - seen eax
 VALID_DEST = ['esp', 'eax', 'ecx', 'edx', 'rsp']
 
-# TODO : Extract patterns
+# This logic is from GolangLoaderAssist. Needs to be broken up, refactored, and improved
 def is_string_load(addr):
     patterns = []
     # Check for first parts instruction and what it is loading -- also ignore function pointers we may have renamed
