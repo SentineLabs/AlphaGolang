@@ -25,11 +25,13 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Fixed some function name cleaning issues from the py3 transition
 
  - Step 3 
+![](docs/images/categorize.gif)
     - categorize_go_folders.py (Requires IDA v7.6+)
         - Automagically categorizes functions into folders
         - Requires IDAv7.6 + 'show folders' to be enabled in functions view
 
  - Step 4
+![](docs/images/stringcast.gif)
     - fix_string_cast.py
         - Split from golang loader assist
         - Added logic to undefine previously existing string blobs before defining new string
