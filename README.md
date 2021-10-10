@@ -9,7 +9,7 @@ Scripts are released under GPL license (honoring Tim Strazzere's original Golang
 **Requirements: IDA Pro (ideally v7.6+) and Python3 (ew)**
 The first two steps (recreate_pclntab and function_discovery_and_renaming) will work on IDA v7.5- but scripts beyond that require IDAv7.6+. Newer versions are the ideal target for newer scripts going forward.
 
-**Original Reference:** Mandiant Cyber Defense Summit 2021 (Video Pending)
+**Original Reference:** Mandiant Cyber Defense Summit 2021 talk (Video Pending)
 
 # AlphaGolang Analysis Methodology
 
@@ -44,14 +44,19 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Still needs refactoring + better string load heuristics
 
 ### Next steps:
- - generate_pseudocode.py 
- - user_code_auto_yara_gen.py
- - user_string_ref_tracking.py
+ - Track strings references by user-generated functions
+ - Auto generate YARA signatures based on user-generated functions 
+ - Generate hex-rays pseudocode output for user-generated functions 
  - Automatically set breakpoints for dynamic analysis of arguments
  - ???
 
 ### Credit to:
- - Tim Strazzere for releasing the original golang_loader_assist
+ - Tim Strazzere for releasing the original [golang_loader_assist](https://github.com/strazzere/golang_loader_assist)
  - Milan Bohacek (Avast Software s.r.o.) for his invaluable help figuring out the idatree API.
- - Joakim Kennedy (Intezer)
+ - Joakim Kennedy (Intezer) 
  - Ivan Kwiatkowski (Kaspersky GReAT)
+
+### References
+ - For a similar effort for Ghidra, refer to [Dorka Palotay's work](https://cujo.com/reverse-engineering-go-binaries-with-ghidra/)
+ - For a standalone tool also compatible with r2, check out [Gore](https://go-re.tk/gore/) and [redress](https://github.com/goretk/redress)
+ - Ivan Kwiatkowski's Go Reversing Training [Pt1](https://www.youtube.com/watch?v=_cL-OwU9pFQ)[Pt2](https://www.youtube.com/watch?v=YRqTrq11ebg)
