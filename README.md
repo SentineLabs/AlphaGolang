@@ -13,6 +13,11 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
 
 # AlphaGolang Analysis Methodology
 
+ - ## Step 0: YARA rule to identify Go binaries (PE/ELF/MachO)
+    - identify_go_binaries.yara
+        - Simple header check + regex for Go build ID string.
+        - Could probably improve the build ID length range.
+
  - ## Step 1: Recreate pcln table
     - recreate_pclntab.py (IDA v7.5- compatible)
         - Recreates the gopclntab section from heuristics
@@ -38,6 +43,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Split from golang loader assist
         - Added logic to undefine previously existing string blobs before defining new string
         - New sanity checks make it far more effective
+
 
 ### Pending fixes and room for contributions:
  - fix_string_cast.py 
