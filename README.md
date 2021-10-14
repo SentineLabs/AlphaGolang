@@ -19,11 +19,15 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Could probably improve the build ID length range.
 
  - ## Step 1: Recreate pcln table
+   <img src="docs/images/recreate_pclntab.gif" width="600" height="550" />
+
     - recreate_pclntab.py (IDA v7.5- compatible)
         - Recreates the gopclntab section from heuristics
         - Mostly useful for IDA v7.5-
 
  - ## Step 2: Discovery functions and add names to all 
+   <img src="docs/images/function_discover_and_rename.gif" width="600" height="550" />
+
     - function_renaming.py (IDA v7.5- compatible)
         - Split from golang loader assist
         - Bruteforces discovery of missing functions based on the pcln table
