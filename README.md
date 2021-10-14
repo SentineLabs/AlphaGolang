@@ -25,7 +25,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Recreates the gopclntab section from heuristics
         - Mostly useful for IDA v7.5-
 
- - ## Step 2: Discovery functions and add names to all 
+ - ## Step 2: Discover functions by walking pcln table and add names to all
    <img src="docs/images/function_discover_and_rename.gif" width="600" height="550" />
 
     - function_renaming.py (IDA v7.5- compatible)
@@ -41,7 +41,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Requires IDAv7.6 + 'show folders' to be enabled in functions view
 
  - ### Step 4: Fix string references
-   <img src="docs/images/stringcast.gif" width="900" height="600" />
+   <img src="docs/images/stringcast.gif" width="900" height="500" />
 
     - fix_string_cast.py
         - Split from golang loader assist
