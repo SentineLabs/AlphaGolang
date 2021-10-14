@@ -19,7 +19,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Could probably improve the build ID length range.
 
  - ## Step 1: Recreate pcln table
-   <img src="docs/images/recreate_pclntab.gif" width="600" height="550" />
+   <img src="docs/images/recreate_pcln.gif" width="600" height="550" />
 
     - recreate_pclntab.py (IDA v7.5- compatible)
         - Recreates the gopclntab section from heuristics
