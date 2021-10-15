@@ -1,7 +1,7 @@
 # AlphaGolang 
 *by Juan Andres Guerrero-Saade (JAG-S @ SentinelLabs)*
 
-<img src="docs/logo/gopher_plays_go.png" width="600" height="550" />
+<img src="docs/logo/gopher_plays_go.png" width="600" height="400" />
 
 ### Description: 
 AlphaGolang is a collection of IDAPython scripts to help malware reverse engineers master Go binaries. The idea is to break the scripts into concrete steps, thus avoiding brittle monolithic scripts, and mimicking the methodology an analyst might follow when tackling a Go binary.
