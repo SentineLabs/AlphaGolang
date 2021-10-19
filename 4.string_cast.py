@@ -121,6 +121,10 @@ def undefine_long_strings(len_boundary):
 # mov     [esp+94h+var_8C], eax
 # mov     [esp+94h+var_88], 2
 
+# JAG-S (10.19.2021): need to add support for indirect string loads (go v1.17)
+# lea     rax, unk_10B1E80 #offset str len
+# mov     qword ptr [rsp+58h+var_18], rax
+# lea     rax, off_10EAAC0 #offset to offset of str
 
 # Currently it's normally ebx, but could in theory be anything - seen ebp
 VALID_REGS = ['eax', 'ebx', 'ebp', 'rax', 'rcx', 'r10', 'rdx']
@@ -128,7 +132,7 @@ VALID_REGS = ['eax', 'ebx', 'ebp', 'rax', 'rcx', 'r10', 'rdx']
 # Currently it's normally esp, but could in theory be anything - seen eax
 VALID_DEST = ['esp', 'eax', 'ecx', 'edx', 'rsp']
 
-# This logic is from GolangLoaderAssist. Needs to be broken up, refactored, and improved
+# JAG-S (10.10.2021): This logic is from GolangLoaderAssist. Desperately needs to be broken up, refactored, and improved <--- HELP HERE
 def is_string_load(addr):
     patterns = []
     # Check for first parts instruction and what it is loading -- also ignore function pointers we may have renamed
@@ -172,18 +176,18 @@ def create_string(addr, string_len):
     if idc.get_str_type(addr) is not None and ida_bytes.get_strlit_contents(addr, string_len, STRTYPE_C) is not None and len(ida_bytes.get_strlit_contents(addr, string_len, STRTYPE_C)) != string_len:
         debug('It appears that there is already a string present @ 0x%x' % addr)
         try:
-            ida_bytes.del_items(addr, string_len, ida_bytes.DELIT_SIMPLE)
+            undefine_string(string_addr)
         except:
-            print("Failed delete")
+            debug("Failed delete")
 
     if ida_bytes.get_strlit_contents(addr, string_len, STRTYPE_C) is None and ida_bytes.create_strlit(addr, string_len, STRTYPE_C):
         return True
     else:
         # If something is already partially analyzed (incorrectly) we need to ida_bytes.del_items it
         try:
-            ida_bytes.del_items(addr, string_len, ida_bytes.DELIT_SIMPLE)
+            undefine_string(string_addr)
         except:
-            print("Failed delete")
+            debug("Failed delete")
         if ida_bytes.create_strlit(addr, string_len, STRTYPE_C):
             return True
         debug('Unable to make a string @ 0x%x with length of %d' % (addr, string_len))
