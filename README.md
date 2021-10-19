@@ -68,7 +68,3 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
  - Joakim Kennedy (Intezer) 
  - Ivan Kwiatkowski (Kaspersky GReAT)
 
-### References
- - For a similar effort for Ghidra, refer to [Dorka Palotay's work](https://cujo.com/reverse-engineering-go-binaries-with-ghidra/)
- - For a standalone tool also compatible with r2, check out [Gore](https://go-re.tk/gore/) and [redress](https://github.com/goretk/redress)
- - Ivan Kwiatkowski's Go Reversing Training [Pt1](https://www.youtube.com/watch?v=_cL-OwU9pFQ)[Pt2](https://www.youtube.com/watch?v=YRqTrq11ebg)
