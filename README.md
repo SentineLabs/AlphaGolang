@@ -67,4 +67,4 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
  - Milan Bohacek (Avast Software s.r.o.) for his invaluable help figuring out the idatree API.
  - Joakim Kennedy (Intezer) 
  - Ivan Kwiatkowski (Kaspersky GReAT)
-
+ - Igor Kuznetsov (Kaspersky GReAT)
