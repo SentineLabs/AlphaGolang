@@ -42,7 +42,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Automagically categorizes functions into folders
         - Requires IDAv7.6 + 'show folders' to be enabled in functions view
 
- - ### Step 4: Fix string references
+ - ## Step 4: Fix string references
    <img src="docs/images/stringcast.gif" width="900" height="500" />
 
     - fix_string_cast.py
@@ -50,7 +50,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Added logic to undefine previously existing string blobs before defining new string
         - New sanity checks make it far more effective
 
- - ### Step 5: Extract type information (by Ivan Kwiatkowski)
+ - ## Step 5: Extract type information (by Ivan Kwiatkowski)
    <img src="docs/images/recover_type.gif" width="900" height="500" />
 
     - extract_types.py
