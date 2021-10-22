@@ -172,19 +172,13 @@ def create_string(addr, string_len):
     # This may be overly aggressive if we found the wrong area...
     if idc.get_str_type(addr) is not None and ida_bytes.get_strlit_contents(addr, string_len, STRTYPE_C) is not None and len(ida_bytes.get_strlit_contents(addr, string_len, STRTYPE_C)) != string_len:
         debug('It appears that there is already a string present @ 0x%x' % addr)
-        try:
-            undefine_string(string_addr)
-        except:
-            debug("Failed delete")
+        undefine_string(addr)
 
     if ida_bytes.get_strlit_contents(addr, string_len, STRTYPE_C) is None and ida_bytes.create_strlit(addr, string_len, STRTYPE_C):
         return True
     else:
         # If something is already partially analyzed (incorrectly) we need to ida_bytes.del_items it
-        try:
-            undefine_string(string_addr)
-        except:
-            debug("Failed delete")
+        undefine_string(addr)
         if ida_bytes.create_strlit(addr, string_len, STRTYPE_C):
             return True
         debug('Unable to make a string @ 0x%x with length of %d' % (addr, string_len))
@@ -235,7 +229,7 @@ def strings_init():
                 else:
                     # There appears to be something odd that goes on with IDA making some strings, always works
                     # the second time, so lets just force a retry...
-                    if string_len < 120:
+                    if string_len < 100:
                         retry.append((addr, string_addr, string_len))
 
                 # Skip the extra mov lines since we know it won't be a load on any of them
@@ -249,13 +243,11 @@ def strings_init():
                 continue
         except:
             debug("String retry addr check fallthrough")
-        undefine_string(ida_bytes.get_item_head(string_addr)) #Attempt to undefine after first failed attempt to define string
         if create_string(string_addr, string_len):
             if create_offset(instr_addr):
                 strings_added += 1
         else:
             error('FAILED-RETRY : Unable to make a string @ 0x%x with length of %d for usage in function @ 0x%x' % (string_addr, string_len, instr_addr))
-
     return strings_added
 
 def main():
