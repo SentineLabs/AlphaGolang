@@ -50,10 +50,18 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Added logic to undefine previously existing string blobs before defining new string
         - New sanity checks make it far more effective
 
+ - ### Step 5: Extract type information
+	- extract_types.py
+		- Comments the arguments of all calls to `newobject`, `makechan`, etc.
+		- Applies the correct C type to these objects and renames them
+		- Obtains the human-readable name and adds it as a comment
 
 ### Pending fixes and room for contributions:
  - fix_string_cast.py 
         - Still needs refactoring + better string load heuristics
+ - extract_types.py
+		- Only works on PE files currently and looks for the hardcoded `.rdata` section
+		- A proper check / implementation for varint-encoded sizes is needed
 
 ### Next steps:
  - Track strings references by user-generated functions
@@ -66,5 +74,5 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
  - Tim Strazzere for releasing the original [golang_loader_assist](https://github.com/strazzere/golang_loader_assist)
  - Milan Bohacek (Avast Software s.r.o.) for his invaluable help figuring out the idatree API.
  - Joakim Kennedy (Intezer) 
- - Ivan Kwiatkowski (Kaspersky GReAT)
+ - Ivan Kwiatkowski (Kaspersky GReAT) for step 5.
  - Igor Kuznetsov (Kaspersky GReAT)
