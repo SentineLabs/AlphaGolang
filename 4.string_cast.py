@@ -46,9 +46,6 @@ def get_text_seg():
     return _get_seg(['.text', '__text'])
 
 def get_gopclntab_seg():
-    # .gopclntab found in (older) PE & ELF binaries, __gopclntab found in macho binaries,
-    # runtime.pclntab in .rdata for newer PE binaries
-    # JAGS -- MODIFIED TO CREATE GOPCLNTAB segment if it's not already there
     seg = _get_seg_from_rdata(['runtime.pclntab'])
 
     if seg is None:
@@ -232,7 +229,6 @@ def strings_init():
                 string_addr = idc.get_operand_value(addr, 1)
                 addr_3 = ida_search.find_code(ida_search.find_code(addr, SEARCH_DOWN), SEARCH_DOWN)
                 string_len = idc.get_operand_value(addr_3, 1)
-                undefine_string(string_addr)
                 if create_string(string_addr, string_len):
                     if create_offset(addr):
                         strings_added += 1

@@ -21,6 +21,7 @@ except:
     is_be = info.mf
 
 lookup = "FF FF FF FB 00 00" if is_be else "FB FF FF FF 00 00"
+v116magic = "FF FF FF FA 00 00" if is_be else "FA FF FF FF 00 00" #0xFFFFFFFA #Needs testing
 
 if info.is_32bit():
     get_content = ida_bytes.get_dword
@@ -35,6 +36,9 @@ seg_start = 0
 seg_end = 0
 
 ea = idc.find_binary(0, idc.SEARCH_DOWN, lookup)
+if ea == idaapi.BADADDR:
+    ea = idc.find_binary(0, idc.SEARCH_DOWN, v116magic)
+
 if ea != idaapi.BADADDR:
     seg_start = ea
     print("Segment start (magic header): ", hex(seg_start))
