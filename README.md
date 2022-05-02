@@ -59,11 +59,14 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
        - Obtains the human-readable name and adds it as a comment
 
 ### Pending fixes and room for contributions:
+ - IDA 7.7 attempts a half-assed version of our folder organizing with less useful results. Step 3 doesn't produce as good results on 7.7+ and needs some sanity checks.
  - fix_string_cast.py 
         - Still needs refactoring + better string load heuristics
+        - Can lead to lock up in massive binaries.
+        - Missing some indirect string load mechanisms.
  - extract_types.py
-		- Only works on PE files currently and looks for the hardcoded `.rdata` section
-		- A proper check / implementation for varint-encoded sizes is needed
+	- Works on PE and Mach-O files currently by looking for the hardcoded `.rdata` or `__rodate` section names.
+	- A proper check / implementation for varint-encoded sizes is needed
 
 ### Next steps:
  - Track strings references by user-generated functions
