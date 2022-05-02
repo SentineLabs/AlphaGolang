@@ -65,7 +65,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Can lead to lock up in massive binaries.
         - Missing some indirect string load mechanisms.
  - extract_types.py
-	- Works on PE and Mach-O files currently by looking for the hardcoded `.rdata` or `__rodate` section names.
+	- Works on PE and Mach-O files currently by looking for the hardcoded `.rdata` or `__rodata` section names.
 	- A proper check / implementation for varint-encoded sizes is needed
 
 ### Next steps:
