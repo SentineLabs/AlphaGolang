@@ -89,7 +89,7 @@ def parse_type(addr):
 	SetType(addr, "golang_type")
 	data_addr = -1
 	for s in Segments():
-		if get_segm_name(s) == ".rdata":
+		if (get_segm_name(s) == ".rdata") or (get_segm_name(s) == "__rodata"):
 		   data_addr = get_segm_start(s)
 	if data_addr == -1:
 		print("Could not find .rdata segment!")
