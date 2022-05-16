@@ -41,6 +41,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
    - categorize_go_folders.py (Requires IDA v7.6+)
         - Automagically categorizes functions into folders
         - Requires IDAv7.6 + 'show folders' to be enabled in functions view
+		- UPDATE 05.16.2022: Fixed conflict with IDA v7.7 folder sort
 
  - ## Step 4: Fix string references
    <img src="docs/images/stringcast.gif" width="900" height="500" />
@@ -61,9 +62,11 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
 ### Pending fixes and room for contributions:
  - fix_string_cast.py 
         - Still needs refactoring + better string load heuristics
+        - Can lead to lock up in massive binaries.
+        - Missing some indirect string load mechanisms.
  - extract_types.py
-		- Only works on PE files currently and looks for the hardcoded `.rdata` section
-		- A proper check / implementation for varint-encoded sizes is needed
+	- Works on PE and Mach-O files currently by looking for the hardcoded `.rdata` or `__rodata` section names.
+	- A proper check / implementation for varint-encoded sizes is needed
 
 ### Next steps:
  - Track strings references by user-generated functions

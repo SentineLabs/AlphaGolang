@@ -83,44 +83,43 @@ def find_type_structures(func_name, search_len=15):
 
 
 def parse_type(addr):
-    """
-    Applies the correct structure to the type at the given address and locates its name.
-    """
-    SetType(addr, "golang_type")
-    data_addr = -1
-    for s in Segments():
-        if (get_segm_name(s) == ".rdata") or (get_segm_name(s) == "__rodata"):
-           data_addr = get_segm_start(s)
-    if data_addr == -1:
-        print("Could not find .rdata segment!")
-        return False
-           
-    # nameOff is an offset into rdata. We end up on a structure where the first byte is a bitfield
-    # followed by the size of the string followed by the name of the type.
-    # https://github.com/golang/go/blob/release-branch.go1.16/src/reflect/type.go#L443
-    nameOff = get_wide_dword(addr + 0x28) + data_addr
-    if nameOff == data_addr:
-        return True  # No type string, just move on
-        
-    # Starting from Go 1.17 (?), the size is provided as a varint-encoded length.
-    size = get_wide_byte(nameOff + 1) << 8 | get_wide_byte(nameOff + 2)
-    if size > 0xFF:  # Quick & dirty sanity check.
-        size = get_wide_byte(nameOff + 1)  # This is almost certain to break eventually
-        type_str = get_strlit_contents(nameOff + 2, size)
-    else:
-        type_str = get_strlit_contents(nameOff + 3, size)
-    if not type_str:
-        print(f"Could not obtain type name for {hex(addr)} at address {hex(nameOff)}")
-        del_items(addr)  # Was probably a FP, delete the structure and move on
-        return True
-    set_cmt(addr, type_str.decode(errors="replace"), False)
-    for ref in XrefsTo(addr):
-        set_cmt(ref.frm, type_str.decode(errors="replace"), False)
-    # Rename the structure too. 0x800 = SN_FORCE, not available for some reason
-    # See https://hex-rays.com/products/ida/support/idadoc/203.shtml
-    set_name(addr, "type_" + type_str.decode(errors="replace")[:20], SN_NOCHECK | 0x800)
-    return True
-
+	"""
+	Applies the correct structure to the type at the given address and locates its name.
+	"""
+	SetType(addr, "golang_type")
+	data_addr = -1
+	for s in Segments():
+		if (get_segm_name(s) == ".rdata") or (get_segm_name(s) == "__rodata"):
+		   data_addr = get_segm_start(s)
+	if data_addr == -1:
+		print("Could not find .rdata segment!")
+		return False
+		   
+	# nameOff is an offset into rdata. We end up on a structure where the first byte is a bitfield
+	# followed by the size of the string followed by the name of the type.
+	# https://github.com/golang/go/blob/release-branch.go1.16/src/reflect/type.go#L443
+	nameOff = get_wide_dword(addr + 0x28) + data_addr
+	if nameOff == data_addr:
+		return True  # No type string, just move on
+		
+	# Starting from Go 1.17 (?), the size is provided as a varint-encoded length.
+	size = get_wide_byte(nameOff + 1) << 8 | get_wide_byte(nameOff + 2)
+	if size > 0xFF:  # Quick & dirty sanity check.
+		size = get_wide_byte(nameOff + 1)  # This is almost certain to break eventually
+		type_str = get_strlit_contents(nameOff + 2, size)
+	else:
+		type_str = get_strlit_contents(nameOff + 3, size)
+	if not type_str:
+		print(f"Could not obtain type name for {hex(addr)} at address {hex(nameOff)}")
+		del_items(addr)  # Was probably a FP, delete the structure and move on
+		return True
+	set_cmt(addr, type_str.decode(errors="replace"), False)
+	for ref in XrefsTo(addr):
+		set_cmt(ref.frm, type_str.decode(errors="replace"), False)
+	# Rename the structure too. 0x800 = SN_FORCE, not available for some reason
+	# See https://hex-rays.com/products/ida/support/idadoc/203.shtml
+	set_name(addr, "type_" + type_str.decode(errors="replace")[:20], SN_NOCHECK | 0x800)
+	return True
 
 # Import the required IDA structures if necessary
 if get_struc_id("golang_type") == BADADDR:
