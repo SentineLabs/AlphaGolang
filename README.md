@@ -42,6 +42,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Automagically categorizes functions into folders
         - Requires IDAv7.6 + 'show folders' to be enabled in functions view
 		- UPDATE 05.16.2022: Fixed conflict with IDA v7.7 folder sort
+		- Highly recommend reverting metadata from Lumina before running this plugin.
 
  - ## Step 4: Fix string references
    <img src="docs/images/stringcast.gif" width="900" height="500" />
