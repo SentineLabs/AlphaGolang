@@ -34,6 +34,7 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
         - Split from golang loader assist
         - Bruteforces discovery of missing functions based on the pcln table
         - Fixed some function name cleaning issues from the py3 transition
+        - Refactored to add improvements for Go v1.18 based on Akamai's Panchan! Thanks to Alex (CycleOfTheAbsurd).
 
  - ## Step 3: Surface user-generated functions
    <img src="docs/images/categorize.gif" width="600" height="550" />
@@ -82,3 +83,4 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
  - Joakim Kennedy (Intezer) 
  - Ivan Kwiatkowski (Kaspersky GReAT) for step 5.
  - Igor Kuznetsov (Kaspersky GReAT)
+ - Alex (a.k.a. CycleOfTheAbsurd) from ESET for refactoring Step 2 for Go v1.18 support.
