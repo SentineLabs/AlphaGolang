@@ -15,6 +15,10 @@ import string
 #
 DEBUG = False
 
+GO112_MAGIC = 0xfffffffb
+GO116_MAGIC = 0xfffffffa
+GO118_MAGIC = 0xfffffff0
+
 #
 # Utility functions
 #
@@ -161,6 +165,7 @@ def runtime_init():
 
     if find_func_by_name('runtime_morestack') is not None:
         func_created += traverse_xrefs(find_func_by_name('runtime_morestack'))
+        func_created += traverse_xrefs(find_func_by_name('runtime_morestackc'))
         func_created += traverse_xrefs(find_func_by_name('runtime_morestack_noctxt'))
     else:
         runtime_ms = create_runtime_ms()
@@ -197,6 +202,83 @@ def clean_function_name(name):
             clean_name += c    
     return clean_name
 
+class _GoPclnTab():
+    def __init__(self, start_ea, offset_funcdata, offset_nametab, functab_data_size=None):
+        self.addr = start_ea
+        self.magic = idaapi.get_dword(self.addr)
+        # Partially Adapted from Akamai's script for the Panchan cryptojacker
+        # https://github.com/akamai/akamai-security-research/blob/main/malware/panchan/function_discovery_and_renaming.py
+        # Copyright 2022 Akamai Technologies Inc.
+        self.ptr_size = idaapi.get_byte(self.addr + 7)
+        self.functab_data_size =  functab_data_size if functab_data_size is not None else self.ptr_size
+        tab_offsets_ea = self.addr + 8
+        self.nfunctab = create_pointer(tab_offsets_ea, self.ptr_size)[0]
+
+        self.text_start_ea, _ = create_pointer(tab_offsets_ea + 2 * self.ptr_size, self.ptr_size)
+        if not idaapi.is_loaded(self.text_start_ea): # Sometimes, the value in the pcln tab isn't a valid adress
+            self.text_start_ea = get_text_seg()
+
+        self.funcnametab_ea = self.addr + create_pointer(tab_offsets_ea + offset_nametab * self.ptr_size, self.ptr_size)[0]
+        self.funcdatatab_ea = self.addr + create_pointer(tab_offsets_ea + offset_funcdata * self.ptr_size, self.ptr_size)[0]
+        self.cutab_ea = self.addr + create_pointer(tab_offsets_ea + 4 * self.ptr_size, self.ptr_size)[0]
+
+    def _get_func_addr(self, idx):
+        return create_pointer(self.funcdatatab_ea + 2 * idx * self.functab_data_size, self.ptr_size)[0]
+
+    def _get_funcdata_ea(self, idx):
+        return self.funcdatatab_ea + create_pointer(self.funcdatatab_ea + (2 * idx + 1) * self.functab_data_size, self.ptr_size)[0]
+
+    def _get_func_name_ea(self, idx):
+        funcdata_ea = self._get_funcdata_ea(idx)
+        return self.funcnametab_ea + idaapi.get_dword(funcdata_ea + self.functab_data_size)
+
+    def enumerate_functions(self):
+        for idx in range(self.nfunctab):
+            func_addr = self._get_func_addr(idx)
+            func_name_ea = self._get_func_name_ea(idx)
+            try:
+                func_name = ida_bytes.get_strlit_contents(func_name_ea, -1, STRTYPE_C)
+            except:
+                debug("No name found for function at 0x%x" % func_addr)
+                continue
+            yield func_addr, func_name
+
+class GoPclnTab12(_GoPclnTab):
+    def __init__(self, start_ea):
+        super().__init__(start_ea, 0, 0)
+        self.funcdatatab_ea = self.addr + 8 + self.ptr_size
+        self.funcnametab_ea = self.addr
+        self.cutab_ea = None
+
+    def _get_funcdata_ea(self, idx):
+        return self.addr + create_pointer(self.funcdatatab_ea + (2 * idx + 1) * self.functab_data_size, self.ptr_size)[0]
+
+class GoPclnTab116(_GoPclnTab):
+    def __init__(self, start_ea):
+        super().__init__(start_ea, 6, 2)
+
+class GoPclnTab118(_GoPclnTab):
+    def __init__(self, start_ea):
+        super().__init__(start_ea, 7, 3, 4)
+
+    # Starting from Go 1.18, the function address in functab is stored as an
+    # offset from the beginning of .text
+    def _get_func_addr(self, idx):
+        return self.text_start_ea + idaapi.get_dword(self.funcdatatab_ea + 2 * idx * self.functab_data_size)
+
+    def _get_funcdata_ea(self, idx):
+        return self.funcdatatab_ea + idaapi.get_dword(self.funcdatatab_ea + (2 * idx + 1) * self.functab_data_size)
+
+# Properly parse the pclntb depending on Golang version
+def parse_pcln(start_ea):
+    magic = idaapi.get_dword(start_ea)
+    if magic == GO118_MAGIC:
+        return GoPclnTab118(start_ea)
+    elif magic == GO116_MAGIC:
+        return GoPclnTab116(start_ea)
+    else:
+        return GoPclnTab12(start_ea)
+
 def renamer_init():
     renamed = 0
 
@@ -210,31 +292,19 @@ def renamer_init():
             start_ea = gopclntab
         else:
             start_ea = gopclntab.start_ea
-        # Skip unimportant header and goto section size
-        addr = start_ea + 8
-        size, addr_size = create_pointer(addr)
-        addr += addr_size
 
-        # Unsure if this end is correct
-        early_end = addr + (size * addr_size * 2)
-        while addr < early_end:
-            func_offset, addr_size = create_pointer(addr)
-            name_offset, addr_size = create_pointer(addr + addr_size)
-            addr += addr_size * 2
+        pcln = parse_pcln(start_ea)
 
-            func_name_addr = idc.get_wide_dword(name_offset + start_ea + addr_size) + start_ea
-            func_name = ida_bytes.get_strlit_contents(func_name_addr, -1, STRTYPE_C)
-            try:
-                ida_bytes.create_strlit(func_name_addr, len(func_name), STRTYPE_C)
-            except:
-                continue
-            appended = clean_func_name = clean_function_name(func_name)
-            debug('Going to remap function at 0x%x with %s - cleaned up as %s' % (func_offset, func_name, clean_func_name))
-            if idaapi.get_func_name(func_offset) is not None:
-                if idc.set_name(func_offset, clean_func_name):
-                    renamed += 1
-                else:
-                    error('clean_func_name error %s' % clean_func_name)
+        for func_ea, func_name in pcln.enumerate_functions():
+            clean_func_name = clean_function_name(func_name)
+            debug('Going to remap function at 0x%x with %s - cleaned up as %s' % (func_ea, func_name, clean_func_name))
+            if idaapi.get_func_name(func_ea) is not None:
+                try:
+                    idc.set_name(func_ea, clean_func_name)
+                except Exception as e:
+                    error('clean_func_name error %s, exception' % (clean_func_name, e))
+                    continue
+                renamed += 1
 
     return renamed
 
