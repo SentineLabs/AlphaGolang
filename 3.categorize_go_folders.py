@@ -1,8 +1,7 @@
 #IDAPython script to categorize golang functions into folders
 #Turn on "Show Folders" to see effects
-import idaapi
-import idautils
 import ida_dirtree
+import idautils
 import idc
 
 func_dir: ida_dirtree.dirtree_t
@@ -11,6 +10,7 @@ ite = ida_dirtree.dirtree_iterator_t()
 ok = func_dir.findfirst(ite, "*")
 
 folders = {}
+
 
 def create_folders():
     for function in idautils.Functions():
@@ -51,6 +51,7 @@ def create_folders():
             folders.pop(folder)
             func_dir.rmdir(folder)
 
+
 def populate_folders():
     for folderName in folders:
         if not func_dir.isdir(folderName):
@@ -65,6 +66,7 @@ def populate_folders():
                 func_dir.rename(func, folderName+"/"+func)
             except:
                 print("Failed to move function:", func)
+
 
 def nest_standard_packages():
     common_packages = ["archive", "bufio", "builtin", "bytes", "compress", "container", "context", "crypto", "database", "debug", "embed", "encoding", "errors", "flag", "fmt", "go", "hash", "html", "image", "index", "io", "log", "math", "mime", "net", "os", "path", "plugin", "regexp", "sort", "strconv", "strings", "sync", "syscall", "testing", "text", "time", "unicode", "unsafe", "internal", "reflect", "vendor", "golang", "runtime", "type", "setg", "pthread", "walk", "gosave", "x", "cgo"]
@@ -81,27 +83,29 @@ def nest_standard_packages():
 
 
 def github_sort():
-    github_repos = {}
-    for package in folders["github"]:
-        repo = ""
-        for i,c in enumerate(package[11:]):
-            if c == "." or c == "_": 
-                i = i+11
-                repo = package[11:i]
-                github_repos.setdefault(repo,[]).append(package)
-                break
+    if "github" in folders.keys():
+        github_repos = {}
+        for package in folders["github"]:
+            repo = ""
+            for i,c in enumerate(package[11:]):
+                if c == "." or c == "_": 
+                    i = i+11
+                    repo = package[11:i]
+                    github_repos.setdefault(repo,[]).append(package)
+                    break
 
-    for repo in github_repos:
-        sub_folder = "github/" + repo
-        try:
-            func_dir.mkdir(sub_folder)
-        except:
-            print("Failed to create folder: ", sub_folder)
-        for func in github_repos[repo]:
+        for repo in github_repos:
+            sub_folder = "github/" + repo
             try:
-                func_dir.rename("github/"+func, sub_folder+"/"+func)
+                func_dir.mkdir(sub_folder)
             except:
-                print("Failed to move github repo:", func)
+                print("Failed to create folder: ", sub_folder)
+            for func in github_repos[repo]:
+                try:
+                    func_dir.rename("github/"+func, sub_folder+"/"+func)
+                except:
+                    print("Failed to move github repo:", func)
+
 
 create_folders()
 populate_folders()
