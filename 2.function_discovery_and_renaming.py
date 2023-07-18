@@ -18,6 +18,7 @@ DEBUG = False
 GO112_MAGIC = 0xfffffffb
 GO116_MAGIC = 0xfffffffa
 GO118_MAGIC = 0xfffffff0
+GO120_MAGIC = 0xfffffff1
 
 #
 # Utility functions
@@ -272,7 +273,10 @@ class GoPclnTab118(_GoPclnTab):
 # Properly parse the pclntb depending on Golang version
 def parse_pcln(start_ea):
     magic = idaapi.get_dword(start_ea)
-    if magic == GO118_MAGIC:
+    
+    if magic == GO120_MAGIC:    ## Go 120 has difference Magic, but executed same with GO118
+        return GoPclnTab118(start_ea)
+    elif magic == GO118_MAGIC:
         return GoPclnTab118(start_ea)
     elif magic == GO116_MAGIC:
         return GoPclnTab116(start_ea)
@@ -294,18 +298,20 @@ def renamer_init():
             start_ea = gopclntab.start_ea
 
         pcln = parse_pcln(start_ea)
-
-        for func_ea, func_name in pcln.enumerate_functions():
-            clean_func_name = clean_function_name(func_name)
-            debug('Going to remap function at 0x%x with %s - cleaned up as %s' % (func_ea, func_name, clean_func_name))
-            if idaapi.get_func_name(func_ea) is not None:
-                try:
-                    idc.set_name(func_ea, clean_func_name)
-                except Exception as e:
-                    error('clean_func_name error %s, exception' % (clean_func_name, e))
-                    continue
-                renamed += 1
-
+        try:
+            for func_ea, func_name in pcln.enumerate_functions():
+                clean_func_name = clean_function_name(func_name)
+                debug('Going to remap function at 0x%x with %s - cleaned up as %s' % (func_ea, func_name, clean_func_name))
+                if idaapi.get_func_name(func_ea) is not None:
+                    try:
+                        idc.set_name(func_ea, clean_func_name)
+                    except Exception as e:
+                        error('clean_func_name error %s, exception' % (clean_func_name, e))
+                        continue
+                    renamed += 1
+        except Exception as e:
+            error('clean_func_name error %s, exception' % (clean_func_name, e))
+            
     return renamed
 
 
