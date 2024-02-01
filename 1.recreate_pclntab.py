@@ -20,10 +20,10 @@ try:
 except:
     is_be = info.mf
 
-lookup = "FF FF FF FB 00 00" if is_be else "FB FF FF FF 00 00"
+v12magic = "FF FF FF FB 00 00" if is_be else "FB FF FF FF 00 00"
 v116magic = "FF FF FF FA 00 00" if is_be else "FA FF FF FF 00 00" #0xFFFFFFFA #Needs testing
 v118magic = "FF FF FF F0 00 00" if is_be else "F0 FF FF FF 00 00"
-
+v120magic = "FF FF FF F1 00 00" if is_be else "F1 FF FF FF 00 00"
 
 if info.is_32bit():
     get_content = ida_bytes.get_dword
@@ -37,12 +37,28 @@ empty_counter = 0
 seg_start = 0
 seg_end = 0
 
-ea = idc.find_binary(0, idc.SEARCH_DOWN, lookup)
+def find_magic(magic):
+    ea = idc.find_binary(0, idc.SEARCH_DOWN, magic)
+    if ea == idaapi.BADADDR:
+        return idaapi.BADADDR
+    pc, ptr = idc.get_bytes(ea + 6, 2)
+    if pc not in [1,2,4]:
+        return idaapi.BADADDR
+    if ptr not in [4,8]:
+        return idaapi.BADADDR
+    print(f"pc:{pc} ptr:{ptr}")
+    return ea
+
+
+ea = find_magic(v12magic)
 if ea == idaapi.BADADDR:
-    ea = idc.find_binary(0, idc.SEARCH_DOWN, v116magic)
+    ea = find_magic(v116magic)
 
 if ea == idaapi.BADADDR:
-    ea = idc.find_binary(0, idc.SEARCH_DOWN, v118magic)
+    ea = find_magic(v118magic)
+
+if ea == idaapi.BADADDR:
+    ea = find_magic(v120magic)
 
 if ea != idaapi.BADADDR:
     seg_start = ea
