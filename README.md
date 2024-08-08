@@ -55,11 +55,14 @@ The first two steps (recreate_pclntab and function_discovery_and_renaming) will 
 
  - ## Step 5: Extract type information (by Ivan Kwiatkowski)
    <img src="docs/images/recover_type.gif" width="900" height="500" />
+   <img src="docs/images/struct_member.png" width="900" height="310" />
 
     - extract_types.py
        - Comments the arguments of all calls to `newobject`, `makechan`, etc.
        - Applies the correct C type to these objects and renames them
        - Obtains the human-readable name and adds it as a comment
+       - Add support to search for segment with section names
+       - Parse struct members and recursively parse struct member's type
 
 ### Pending fixes and room for contributions:
  - fix_string_cast.py 

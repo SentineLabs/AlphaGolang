@@ -236,6 +236,7 @@ class _GoPclnTab():
     def enumerate_functions(self):
         for idx in range(self.nfunctab):
             func_addr = self._get_func_addr(idx)
+            idaapi.add_func(func_addr)
             func_name_ea = self._get_func_name_ea(idx)
             try:
                 func_name = ida_bytes.get_strlit_contents(func_name_ea, -1, STRTYPE_C)
@@ -283,10 +284,55 @@ def parse_pcln(start_ea):
     else:
         return GoPclnTab12(start_ea)
 
+
+def is_qword(addr):
+    """ Check if the given address contains a qword. """
+    if idaapi.get_item_size(addr) == 8:
+        return True
+    return False
+
+def undefine_qword_array(start_ea, length):
+    """ Undefine the qword array starting at 'start_ea' for 'length' qwords. """
+    for i in range(length):
+        idaapi.del_items(start_ea + i * 8, idaapi.DELIT_SIMPLE)
+
+
+def detect_and_undefine_qword_arrays():
+    # Get the number of segments
+    segment_count = ida_segment.get_segm_qty()
+
+    # Iterate through all segments
+    for index in range(segment_count):
+        seg = ida_segment.getnseg(index)
+        if seg:
+            start_ea = seg.start_ea
+            seg_end = seg.end_ea
+
+            current_ea = start_ea
+    
+            while current_ea < seg_end:
+                if is_qword(current_ea):
+                    # Determine the length of the qword array dynamically
+                    length = 1
+                    while is_qword(current_ea + length * 8):
+                        length += 1
+                    
+                    # Undefine the detected qword array
+                    undefine_qword_array(current_ea, length)
+                    
+                    # Move to the next address after the qword array
+                    current_ea += length * 8
+                else:
+                    # Move to the next address
+                    current_ea += 1 
+
 def renamer_init():
+    
+    detect_and_undefine_qword_arrays()
+
     renamed = 0
 
-    gopclntab = get_gopclntab_seg()
+    gopclntab = get_gopclntab_seg()   
 #   if goplcntab is None:
 #   add my code here
     if gopclntab is not None:
@@ -337,13 +383,13 @@ def pointer_renamer():
         # Look at data xrefs to the function - find the pointer that is located in .rodata
         data_ref = idaapi.get_first_dref_to(addr)
         while data_ref != BADADDR:
-            if 'rodata' in get_segm_name(data_ref):
-                # Only rename things that are currently listed as an offset; eg. off_9120B0
-                if 'off_' in ida_name.get_ea_name(data_ref):
-                    if idc.set_name(data_ref, ('ptr_%s' % name)):
-                        renamed += 1
-                    else:
-                        error('error attempting to name pointer @ 0x%02x for %s' % (data_ref, name))
+            # if 'rodata' in get_segm_name(data_ref): - this may not hold true if it's dumped from memory
+            # Only rename things that are currently listed as an offset; eg. off_9120B0
+            if 'off_' in ida_name.get_ea_name(data_ref):
+                if idc.set_name(data_ref, ('ptr_%s' % name)):
+                    renamed += 1
+                else:
+                    error('error attempting to name pointer @ 0x%02x for %s' % (data_ref, name))
 
             data_ref = idaapi.get_next_dref_to(addr, data_ref)
 
