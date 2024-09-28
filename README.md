@@ -8,7 +8,7 @@ AlphaGolang is a collection of IDAPython scripts to help malware reverse enginee
 
 Scripts are released under GPL license (honoring Tim Strazzere's original GolangLoaderAssist which we refactored and updated for python3, props to Tim :) ). Contributions are welcome and encouraged!
 
-**Requirements: IDA Pro (ideally v7.6+) and Python3 (ew)**
+**Requirements: IDA Pro (ideally v7.6+) and Python3 (new)**
 The first two steps (recreate_pclntab and function_discovery_and_renaming) will work on IDA v7.5- but scripts beyond that require IDAv7.6+. Newer versions are the ideal target for newer scripts going forward.
 
 **Original Reference:** Mandiant Cyber Defense Summit 2021 talk (Video Pending)
